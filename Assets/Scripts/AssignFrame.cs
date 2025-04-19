@@ -1,34 +1,40 @@
-using UnityEngine;
-using UnityEngine.UI; // Для работы с UI-компонентами
+п»їusing UnityEngine;
 
 public class AssignFrame : MonoBehaviour
 {
-    [SerializeField] private Material greenMaterial; // Зеленый материал
-    [SerializeField] private Material redMaterial;   // Красный материал       // Ссылка на текстовый элемент
-    private int scoreValue; // Очки, которые дает рамка
+    [SerializeField] private Material greenMaterial; // Р—РµР»С‘РЅС‹Р№ РјР°С‚РµСЂРёР°Р»
+    [SerializeField] private Material redMaterial;   // РљСЂР°СЃРЅС‹Р№ РјР°С‚РµСЂРёР°Р»
+    [SerializeField] private GameObject[] targetObjects; // РњР°СЃСЃРёРІ РѕР±СЉРµРєС‚РѕРІ, Рє РєРѕС‚РѕСЂС‹Рј Р±СѓРґРµС‚ РїСЂРёРјРµРЅСЏС‚СЊСЃСЏ РјР°С‚РµСЂРёР°Р»
+    private int scoreValue; // РћС‡РєРё, РєРѕС‚РѕСЂС‹Рµ РґР°С‘С‚ СЂР°РјРєР°
 
     void Start()
     {
-        // Генерируем случайное значение очков от -100 до 100
+        // Р“РµРЅРµСЂРёСЂСѓРµРј СЃР»СѓС‡Р°Р№РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РѕС‡РєРѕРІ РѕС‚ -100 РґРѕ 100
         scoreValue = Random.Range(-100, 101);
 
-        // Назначаем материал в зависимости от значения очков
-        Renderer renderer = GetComponent<Renderer>();
-        if (scoreValue >= 0)
+        // РќР°Р·РЅР°С‡Р°РµРј РјР°С‚РµСЂРёР°Р» РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ Р·РЅР°С‡РµРЅРёСЏ РѕС‡РєРѕРІ
+        foreach (GameObject target in targetObjects)
         {
-            renderer.material = greenMaterial; // Положительные очки - зеленый материал
+            if (target != null) // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РѕР±СЉРµРєС‚ РЅРµ null
+            {
+                Renderer renderer = target.GetComponent<Renderer>();
+                if (renderer != null) // РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ Сѓ РѕР±СЉРµРєС‚Р° РµСЃС‚СЊ Renderer
+                {
+                    if (scoreValue >= 0)
+                    {
+                        renderer.material = greenMaterial; // РџРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Рµ РѕС‡РєРё - Р·РµР»С‘РЅС‹Р№ РјР°С‚РµСЂРёР°Р»
+                    }
+                    else
+                    {
+                        renderer.material = redMaterial; // РћС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рµ РѕС‡РєРё - РєСЂР°СЃРЅС‹Р№ РјР°С‚РµСЂРёР°Р»
+                    }
+                }
+            }
         }
-        else
-        {
-            renderer.material = redMaterial; // Отрицательные очки - красный материал
-        }
-
-        // Обновляем текст значением очков
     }
 
     public int GetScoreValue()
     {
-        return scoreValue; // Возвращаем значение очков
+        return scoreValue; // Р’РѕР·РІСЂР°С‰Р°РµРј Р·РЅР°С‡РµРЅРёРµ РѕС‡РєРѕРІ
     }
 }
-
