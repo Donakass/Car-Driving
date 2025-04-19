@@ -8,6 +8,7 @@ public class ProgressBar : MonoBehaviour
 
     private float timer = 0f;                   // Таймер для отслеживания времени
     private bool isFilling = false;             // Флаг для контроля заполнения
+    private bool isPaused = false;              // Флаг для контроля паузы
 
     void Start()
     {
@@ -17,7 +18,7 @@ public class ProgressBar : MonoBehaviour
 
     void Update()
     {
-        if (isFilling && timer < fillDuration)
+        if (isFilling && !isPaused && timer < fillDuration)
         {
             // Увеличиваем таймер
             timer += Time.deltaTime;
@@ -35,8 +36,21 @@ public class ProgressBar : MonoBehaviour
         // Сбрасываем таймер и запускаем заполнение
         timer = 0f;
         isFilling = true;
+        isPaused = false;
 
         // Устанавливаем начальный масштаб
         progressBarForeground.localScale = new Vector3(0f, 1f, 1f);
+    }
+
+    public void PauseFilling()
+    {
+        // Приостанавливаем заполнение
+        isPaused = true;
+    }
+
+    public void ResumeFilling()
+    {
+        // Возобновляем заполнение
+        isPaused = false;
     }
 }
