@@ -31,8 +31,8 @@ public class RoadGeneration : MonoBehaviour
 
             // Генерируем два спрайта рамок в центре сегмента дороги
             Vector3 centerPosition = segmentPosition;
-            Instantiate(frameSpritePrefab, centerPosition + new Vector3(-1, 0, 0), Quaternion.identity, roadSegment.transform);
-            Instantiate(frameSpritePrefab, centerPosition + new Vector3(1, 0, 0), Quaternion.identity, roadSegment.transform);
+            Instantiate(frameSpritePrefab, centerPosition + new Vector3(-2, 0, 0), Quaternion.identity, roadSegment.transform);
+            Instantiate(frameSpritePrefab, centerPosition + new Vector3(3.5f, 0, 0), Quaternion.identity, roadSegment.transform);
         }
     }
 }

@@ -5,15 +5,13 @@ public class LogicScript : MonoBehaviour
     public int playerScore;
     public Text scoreText;
     [ContextMenu("Add Score")]
-    public void addScore()
+    public void addScore(int number)
     {
-        playerScore += Random.Range(1, 100);
-        scoreText.text = playerScore.ToString();
+        playerScore += number;
     }
     [ContextMenu("Subtract Score")]
-    public void subtractScore()
+    public void subtractScore(int number)
     {
-        playerScore -= Random.Range(1, 100);
-        scoreText.text = playerScore.ToString();
+        playerScore -= number;
     }
 }
