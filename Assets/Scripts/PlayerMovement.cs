@@ -1,90 +1,49 @@
-using System;
+п»їusing System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
-    private float horizontalInput;
-    private float currentSteerAngle;
+    private float targetXPosition; // Р¦РµР»РµРІР°СЏ РїРѕР·РёС†РёСЏ РїРѕ РѕСЃРё X
+    private float screenWidth; // РЁРёСЂРёРЅР° СЌРєСЂР°РЅР°
+    private Vector3 startPosition; // РќР°С‡Р°Р»СЊРЅР°СЏ РїРѕР·РёС†РёСЏ РјР°С€РёРЅС‹
 
     // Settings
-    [SerializeField] private float motorForce, maxSteerAngle;
+    [SerializeField] private float motorForce;
+    [SerializeField] private float moveSpeed = 10f; // РЎРєРѕСЂРѕСЃС‚СЊ РґРІРёР¶РµРЅРёСЏ РІР»РµРІРѕ/РІРїСЂР°РІРѕ
+    [SerializeField] private float movementWidth = 5f; // РЁРёСЂРёРЅР° РїР»РѕСЃРєРѕСЃС‚Рё РґРІРёР¶РµРЅРёСЏ
 
-    // Wheel Colliders
-    [SerializeField] private WheelCollider frontLeftWheelCollider, frontRightWheelCollider;
-    [SerializeField] private WheelCollider rearLeftWheelCollider, rearRightWheelCollider;
-
-    // Wheels
-    [SerializeField] private Transform frontLeftWheelTransform, frontRightWheelTransform;
-    [SerializeField] private Transform rearLeftWheelTransform, rearRightWheelTransform;
+    private void Start()
+    {
+        screenWidth = Screen.width;
+        startPosition = transform.position;
+        targetXPosition = startPosition.x;
+    }
 
     private void FixedUpdate()
     {
         GetInput();
-        HandleMotor();
-        HandleSteering();
-        UpdateWheels();
+        MoveCar();
     }
 
     private void GetInput()
     {
-        horizontalInput = 0f; // Сбрасываем горизонтальный ввод
-
         if (Input.touchCount > 0)
         {
-            foreach (Touch touch in Input.touches)
-            {
-                float screenWidth = Screen.width;
-
-                // Проверяем, где произошло касание
-                if (touch.position.x < screenWidth / 2)
-                {
-                    // Левая часть экрана - поворот влево
-                    horizontalInput = -1f;
-                }
-                else
-                {
-                    // Правая часть экрана - поворот вправо
-                    horizontalInput = 1f;
-                }
-            }
+            Touch touch = Input.GetTouch(0);
+            float normalizedTouchPosition = touch.position.x / screenWidth; // РќРѕСЂРјР°Р»РёР·СѓРµРј РїРѕР·РёС†РёСЋ РєР°СЃР°РЅРёСЏ (0 - Р»РµРІР°СЏ СЃС‚РѕСЂРѕРЅР°, 1 - РїСЂР°РІР°СЏ)
+            targetXPosition = Mathf.Lerp(-movementWidth, movementWidth, normalizedTouchPosition); // РџСЂРµРѕР±СЂР°Р·СѓРµРј РІ РїРѕР·РёС†РёСЋ РЅР° РїР»РѕСЃРєРѕСЃС‚Рё
         }
     }
 
-    private void HandleMotor()
+    private void MoveCar()
     {
-        // Устанавливаем постоянное движение вперед
-        frontLeftWheelCollider.motorTorque = motorForce;
-        frontRightWheelCollider.motorTorque = motorForce;
-    }
+        // РћРіСЂР°РЅРёС‡РёРІР°РµРј РґРІРёР¶РµРЅРёРµ РІ РїСЂРµРґРµР»Р°С… С€РёСЂРёРЅС‹
+        targetXPosition = Mathf.Clamp(targetXPosition, -movementWidth, movementWidth);
 
-    private void HandleSteering()
-    {
-        // Рассчитываем угол поворота
-        currentSteerAngle = maxSteerAngle * horizontalInput;
-
-        // Применяем угол поворота к передним колесам
-        frontLeftWheelCollider.steerAngle = currentSteerAngle;
-        frontRightWheelCollider.steerAngle = currentSteerAngle;
-    }
-
-    private void UpdateWheels()
-    {
-        // Обновляем положение и вращение колес
-        UpdateSingleWheel(frontLeftWheelCollider, frontLeftWheelTransform);
-        UpdateSingleWheel(frontRightWheelCollider, frontRightWheelTransform);
-        UpdateSingleWheel(rearRightWheelCollider, rearRightWheelTransform);
-        UpdateSingleWheel(rearLeftWheelCollider, rearLeftWheelTransform);
-    }
-
-    private void UpdateSingleWheel(WheelCollider wheelCollider, Transform wheelTransform)
-    {
-        Vector3 pos;
-        Quaternion rot;
-        wheelCollider.GetWorldPose(out pos, out rot);
-        wheelTransform.rotation = rot;
-        wheelTransform.position = pos;
+        // Р”РІРёРіР°РµРј РјР°С€РёРЅСѓ Рє С†РµР»РµРІРѕР№ РїРѕР·РёС†РёРё
+        Vector3 targetPosition = new Vector3(targetXPosition, transform.position.y, transform.position.z + motorForce * Time.fixedDeltaTime);
+        transform.position = Vector3.Lerp(transform.position, targetPosition, moveSpeed * Time.fixedDeltaTime);
     }
 }
-
