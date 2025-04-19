@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.SceneManagement;
 public class ProgressBar : MonoBehaviour
 {
     public RectTransform progressBarForeground; // Ссылка на передний план прогресс-бара
@@ -18,6 +18,10 @@ public class ProgressBar : MonoBehaviour
 
     void Update()
     {
+        if (timer >= 35)
+        {
+            SceneManager.LoadScene(2);
+        }
         if (isFilling && !isPaused && timer < fillDuration)
         {
             // Увеличиваем таймер
