@@ -1,28 +1,28 @@
-using UnityEngine;
+п»їusing UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    [SerializeField] private Transform target; // Ссылка на объект машины
-    [SerializeField] private float distance = 10f; // Расстояние камеры от машины
-    [SerializeField] private float height = 5f; // Высота камеры над машиной
-    [SerializeField] private float smoothSpeed = 0.125f; // Скорость сглаживания движения камеры
+    [SerializeField] private Transform target; // Г‘Г±Г»Г«ГЄГ  Г­Г  Г®ГЎГєГҐГЄГІ Г¬Г ГёГЁГ­Г»
+    [SerializeField] private float distance = 10f; // ГђГ Г±Г±ГІГ®ГїГ­ГЁГҐ ГЄГ Г¬ГҐГ°Г» Г®ГІ Г¬Г ГёГЁГ­Г»
+    [SerializeField] private float height = 5f; // Г‚Г»Г±Г®ГІГ  ГЄГ Г¬ГҐГ°Г» Г­Г Г¤ Г¬Г ГёГЁГ­Г®Г©
+    [SerializeField] private float smoothSpeed = 0.125f; // Г‘ГЄГ®Г°Г®Г±ГІГј Г±ГЈГ«Г Г¦ГЁГўГ Г­ГЁГї Г¤ГўГЁГ¦ГҐГ­ГЁГї ГЄГ Г¬ГҐГ°Г»
 
     private void LateUpdate()
     {
         if (target == null)
         {
-            Debug.LogWarning("Target для камеры не назначен!");
+            Debug.LogWarning("Target Г¤Г«Гї ГЄГ Г¬ГҐГ°Г» Г­ГҐ Г­Г Г§Г­Г Г·ГҐГ­!");
             return;
         }
 
-        // Вычисляем позицию камеры позади машины
+        // Г‚Г»Г·ГЁГ±Г«ГїГҐГ¬ ГЇГ®Г§ГЁГ¶ГЁГѕ ГЄГ Г¬ГҐГ°Г» ГЇГ®Г§Г Г¤ГЁ Г¬Г ГёГЁГ­Г»
         Vector3 targetPosition = target.position - target.forward * distance + Vector3.up * height;
 
-        // Плавное перемещение камеры к желаемой позиции
+        // ГЏГ«Г ГўГ­Г®ГҐ ГЇГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГҐ ГЄГ Г¬ГҐГ°Г» ГЄ Г¦ГҐГ«Г ГҐГ¬Г®Г© ГЇГ®Г§ГЁГ¶ГЁГЁ
         Vector3 smoothedPosition = Vector3.Lerp(transform.position, targetPosition, smoothSpeed);
         transform.position = smoothedPosition;
 
-        // Камера всегда смотрит на машину
+        // ГЉГ Г¬ГҐГ°Г  ГўГ±ГҐГЈГ¤Г  Г±Г¬Г®ГІГ°ГЁГІ Г­Г  Г¬Г ГёГЁГ­Гі
         transform.LookAt(target);
     }
 }
