@@ -5,13 +5,19 @@ public class ProgressBar : MonoBehaviour
 {
     public RectTransform progressBarForeground; // Ссылка на передний план прогресс-бара
     public float fillDuration = 5f;             // Время, за которое прогресс-бар заполняется
-    public float maxWidth = 200f;               // Максимальная ширина прогресс-бара
 
     private float timer = 0f;                   // Таймер для отслеживания времени
+    private bool isFilling = false;             // Флаг для контроля заполнения
+
+    void Start()
+    {
+        // Запускаем заполнение прогресс-бара при старте игры
+        StartFilling();
+    }
 
     void Update()
     {
-        if (timer < fillDuration)
+        if (isFilling && timer < fillDuration)
         {
             // Увеличиваем таймер
             timer += Time.deltaTime;
@@ -19,8 +25,18 @@ public class ProgressBar : MonoBehaviour
             // Рассчитываем прогресс (от 0 до 1)
             float progress = timer / fillDuration;
 
-            // Изменяем ширину прогресс-бара
-            progressBarForeground.sizeDelta = new Vector2(progress * maxWidth, progressBarForeground.sizeDelta.y);
+            // Изменяем масштаб по оси X
+            progressBarForeground.localScale = new Vector3(progress, 1f, 1f);
         }
+    }
+
+    public void StartFilling()
+    {
+        // Сбрасываем таймер и запускаем заполнение
+        timer = 0f;
+        isFilling = true;
+
+        // Устанавливаем начальный масштаб
+        progressBarForeground.localScale = new Vector3(0f, 1f, 1f);
     }
 }
