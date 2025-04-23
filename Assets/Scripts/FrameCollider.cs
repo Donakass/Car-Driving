@@ -1,18 +1,16 @@
 ﻿using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class FrameCollider : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI scoreText; // UI-элемент для отображения текущего счета
-    [SerializeField] private TextMeshProUGUI highScoreText; // UI-элемент для отображения рекорда
     [SerializeField] private Material greenMaterial; // Материал для положительных очков
     [SerializeField] private Material redMaterial; // Материал для отрицательных очков
     [SerializeField] private GameObject[] targetObjects; // Объекты, к которым применяется материал
+    [SerializeField] private TextMeshPro frameText; // Текст на рамке для отображения значения очков
 
     private int scoreValue; // Значение очков для этой рамки
     private static int playerScore = 0; // Текущий счет игрока
-    private static int highScore = 0; // Рекорд игрока
 
     private void Start()
     {
@@ -28,6 +26,9 @@ public class FrameCollider : MonoBehaviour
         {
             SetMaterialToRed();
         }
+
+        // Установка текста на рамке
+        UpdateFrameText();
     }
 
     private void OnTriggerEnter(Collider collision)
@@ -37,13 +38,7 @@ public class FrameCollider : MonoBehaviour
             // Обновление очков игрока
             playerScore += scoreValue;
 
-            // Обновление рекорда, если текущий счет больше
-            if (playerScore > highScore)
-            {
-                highScore = playerScore;
-            }
-
-            // Обновление текста очков и рекорда
+            // Обновление текста очков
             UpdateScoreText();
 
             // Удаление рамки после взаимодействия
@@ -55,12 +50,16 @@ public class FrameCollider : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = "Score: " + playerScore;
+            scoreText.text = "" + playerScore;
         }
+    }
 
-        if (highScoreText != null)
+    private void UpdateFrameText()
+    {
+        if (frameText != null)
         {
-            highScoreText.text = "High Score: " + highScore;
+            // Установка текста с учетом знака
+            frameText.text = (scoreValue > 0 ? "+" : "") + scoreValue;
         }
     }
 
