@@ -1,67 +1,62 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class CarController : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
-    private float screenWidth; // Ширина экрана
-    private Vector3 startPosition; // Начальная позиция машины
-    private float currentSpeed; // Текущая скорость машины
-    private bool isTouching; // Флаг, указывающий, касается ли пользователь экрана
+    public float speedZ = 10f; // Постоянная скорость движения
 
-    // Settings
-    [SerializeField] private float motorForce = 10f; // Базовая скорость движения вперед
-    [SerializeField] private float maxSpeed = 25f; // Максимальная скорость при касании
-    [SerializeField] private float speedChangeRate = 50f; // Скорость изменения скорости
-    [SerializeField] private float movementWidth = 5f; // Ширина плоскости движения
+    public float roadMinX = -5f; // Левая граница дороги
+    public float roadMaxX = 5f;  // Правая граница дороги
 
-    private void Start()
+    private bool isTouching = false;
+    private Vector3 targetPosition;
+
+    private PlayerInputActions inputActions;
+
+    private void Awake()
     {
-        screenWidth = Screen.width;
-        startPosition = transform.position;
-        currentSpeed = motorForce; // Начальная скорость равна базовой скорости
+        inputActions = new PlayerInputActions();
     }
 
-    private void FixedUpdate()
+    private void OnEnable()
     {
-        HandleSpeed();
-        GetInputAndMoveCar();
+        inputActions.Enable();
+        inputActions.Player.Touch.performed += OnTouchPerformed;
+        inputActions.Player.Touch.canceled += OnTouchCanceled;
     }
 
-    private void HandleSpeed()
+    private void OnDisable()
     {
-        // Плавное изменение скорости в зависимости от состояния касания
-        if (isTouching)
-        {
-            currentSpeed = Mathf.MoveTowards(currentSpeed, maxSpeed, speedChangeRate * Time.fixedDeltaTime);
-        }
-        else
-        {
-            currentSpeed = Mathf.MoveTowards(currentSpeed, motorForce, speedChangeRate * Time.fixedDeltaTime);
-        }
+        inputActions.Player.Touch.performed -= OnTouchPerformed;
+        inputActions.Player.Touch.canceled -= OnTouchCanceled;
+        inputActions.Disable();
     }
 
-    private void GetInputAndMoveCar()
+    private void OnTouchPerformed(InputAction.CallbackContext context)
     {
-        if (Input.touchCount > 0)
-        {
-            isTouching = true; // Пользователь касается экрана
-            Touch touch = Input.GetTouch(0);
-            float normalizedTouchPosition = touch.position.x / screenWidth; // Нормализуем позицию касания (0 - левая сторона, 1 - правая)
-            float targetXPosition = Mathf.Lerp(-movementWidth, movementWidth, normalizedTouchPosition); // Преобразуем в позицию на плоскости
+        isTouching = true;
+        Vector2 touchPosition = context.ReadValue<Vector2>();
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(touchPosition.x, touchPosition.y, Camera.main.transform.position.y));
+        targetPosition = new Vector3(worldPosition.x, transform.position.y, transform.position.z);
+    }
 
-            // Ограничиваем движение в пределах ширины
-            targetXPosition = Mathf.Clamp(targetXPosition, -movementWidth, movementWidth);
+    private void OnTouchCanceled(InputAction.CallbackContext context)
+    {
+        isTouching = false;
+    }
 
-            // Устанавливаем позицию машины
-            transform.position = new Vector3(targetXPosition, transform.position.y, transform.position.z + currentSpeed * Time.fixedDeltaTime);
-        }
-        else
-        {
-            isTouching = false; // Пользователь отпустил экран
-            // Двигаем машину вперед с текущей скоростью
-            transform.position += Vector3.forward * currentSpeed * Time.fixedDeltaTime;
-        }
+    void Update()
+    {
+        MovePlayer();
+    }
+
+    private void MovePlayer()
+    {
+        // Ограничиваем движение по оси X в пределах границ дороги
+        float clampedX = Mathf.Clamp(targetPosition.x, roadMinX, roadMaxX);
+        transform.position = new Vector3(clampedX, transform.position.y, transform.position.z);
+
+        // Движение по оси Z с постоянной скоростью
+        transform.Translate(Vector3.forward * speedZ * Time.deltaTime);
     }
 }

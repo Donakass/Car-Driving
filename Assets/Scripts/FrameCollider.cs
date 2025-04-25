@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement; // Подключаем пространство имен для работы со сценами
 
 public class FrameCollider : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class FrameCollider : MonoBehaviour
 
     private void Start()
     {
+        // Подписываемся на событие загрузки сцены
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
         // Генерация случайного числа от -100 до +100
         scoreValue = Random.Range(-100, 101);
 
@@ -77,5 +81,20 @@ public class FrameCollider : MonoBehaviour
         {
             obj.GetComponent<Renderer>().material = redMaterial;
         }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Сбрасываем счет игрока при загрузке новой сцены
+        playerScore = 0;
+
+        // Обновляем текст очков, если это необходимо
+        UpdateScoreText();
+    }
+
+    private void OnDestroy()
+    {
+        // Отписываемся от события, чтобы избежать утечек памяти
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 }
